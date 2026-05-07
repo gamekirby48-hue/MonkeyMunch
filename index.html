@@ -383,22 +383,14 @@
       const cosmeticType = document.getElementById('cosmeticType').value;
       const cost = document.getElementById('cost').value;
       const itemIcon = document.getElementById('itemIcon').value;
-      const description = document.getElementById('description').value;
+      const description = document.getElementById('description') ? document.getElementById('description').value : "";
 
       if (!itemName || !itemId || !cosmeticType || !cost || !itemIcon) {
-        return alert('Fill out all required fields');
+        return alert('Fill out all fields');
       }
 
       const cosmetics = getCosmetics();
-      cosmetics.push({
-        itemName,
-        itemId,
-        cosmeticType,
-        cost,
-        itemIcon,
-        description
-      });
-
+      cosmetics.push({ itemName, itemId, cosmeticType, cost, itemIcon, description });
       saveCosmetics(cosmetics);
       loadCosmetics();
       alert('Cosmetic Added');
@@ -407,6 +399,32 @@
     function deleteCosmetic(index) {
       const cosmetics = getCosmetics();
       cosmetics.splice(index, 1);
+      saveCosmetics(cosmetics);
+      loadCosmetics();
+    }
+
+    // EDIT FUNCTION
+    function editCosmetic(index) {
+      const cosmetics = getCosmetics();
+      const c = cosmetics[index];
+      if (!c) return;
+
+      const name = prompt("Item Name", c.itemName);
+      const id = prompt("Item ID", c.itemId);
+      const type = prompt("Cosmetic Type", c.cosmeticType);
+      const cost = prompt("Cost", c.cost);
+      const icon = prompt("Icon URL", c.itemIcon);
+      const desc = prompt("Description", c.description || "");
+
+      cosmetics[index] = {
+        itemName: name,
+        itemId: id,
+        cosmeticType: type,
+        cost: cost,
+        itemIcon: icon,
+        description: desc
+      };
+
       saveCosmetics(cosmetics);
       loadCosmetics();
     }
@@ -444,14 +462,15 @@
           </div>
 
           <div style="display:flex;align-items:center;gap:8px;">
-            <div onclick="alert('ItemID: ${c.itemId}
-Cost: ${c.cost}
-Description: ${c.description || 'None'}')"
+            <div onclick="alert('ItemID: ${c.itemId}\nCost: ${c.cost}\nDescription: ${c.description || 'None'}')"
                  style="cursor:pointer;color:#00ff99;font-weight:bold;font-size:12px;">
               ${c.itemId}
             </div>
 
-            ${isAdmin ? `<button onclick="deleteCosmetic(${index})" style="background:red;border:none;color:white;padding:4px 6px;border-radius:5px;cursor:pointer;">X</button>` : ''}
+            ${isAdmin ? `
+              <button onclick="editCosmetic(${index})" style="background:#ffaa00;border:none;color:black;padding:4px 7px;border-radius:5px;cursor:pointer;font-weight:bold;">!</button>
+              <button onclick="deleteCosmetic(${index})" style="background:red;border:none;color:white;padding:4px 6px;border-radius:5px;cursor:pointer;">X</button>
+            ` : ''}
           </div>
         `;
 
