@@ -1,23 +1,32 @@
-function editCosmetic(index) {
-  const cosmetics = getCosmetics();
-  const c = cosmetics[index];
+function load(){
+  let grid = document.getElementById("cosmeticsGrid");
+  grid.innerHTML = "";
 
-  const name = prompt("Item Name", c.itemName);
-  const id = prompt("Item ID", c.itemId);
-  const type = prompt("Type", c.cosmeticType);
-  const cost = prompt("Cost", c.cost);
-  const icon = prompt("Icon URL", c.itemIcon);
-  const desc = prompt("Description", c.description || "");
+  getCosmetics().forEach((c, i) => {
+    let div = document.createElement("div");
+    div.className = "item";
 
-  cosmetics[index] = {
-    itemName: name,
-    itemId: id,
-    cosmeticType: type,
-    cost: cost,
-    itemIcon: icon,
-    description: desc
-  };
+    div.innerHTML = `
+      <div>
+        <img src="${c.icon}">
+        <div>${c.name}</div>
+        <div style="color:#aaa">${c.type}</div>
+        <div style="color:#ccc;font-size:12px;margin-top:4px;">
+          ${c.desc ? c.desc : ""}
+        </div>
+      </div>
 
-  saveCosmetics(cosmetics);
-  loadCosmetics();
+      <div>
+        <div onclick="alert('${c.id}\\nCost: ${c.cost}\\n${c.desc || ""}')"
+             style="color:#00ff99;cursor:pointer">
+          ${c.id}
+        </div>
+
+        <button class="admin-btn" onclick="editCosmetic(${i})">!</button>
+        <button class="del-btn" onclick="deleteCosmetic(${i})">X</button>
+      </div>
+    `;
+
+    grid.appendChild(div);
+  });
 }
