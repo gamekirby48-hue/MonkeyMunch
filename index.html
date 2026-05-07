@@ -389,17 +389,10 @@
       }
 
       const cosmetics = getCosmetics();
-      cosmetics.push({
-        itemName,
-        itemId,
-        cosmeticType,
-        cost,
-        itemIcon
-      });
-
+      cosmetics.push({ itemName, itemId, cosmeticType, cost, itemIcon });
       saveCosmetics(cosmetics);
-      alert('Cosmetic Added');
       loadCosmetics();
+      alert('Cosmetic Added');
     }
 
     function deleteCosmetic(index) {
@@ -409,7 +402,7 @@
       loadCosmetics();
     }
 
-    // SIMPLE LIST VIEW (NO BACKGROUND, NO MODAL)
+    // CLEAN LIST UI (NO BACKGROUND, NO GREY BOXES)
     function loadCosmetics() {
       const grid = document.getElementById('cosmeticsGrid');
       grid.innerHTML = '';
@@ -419,38 +412,36 @@
       const isAdmin = adminUsers.includes(currentUser);
 
       cosmetics.forEach((c, index) => {
-        const card = document.createElement('div');
-        card.style = `
+        const row = document.createElement('div');
+        row.style = `
           display:flex;
           align-items:center;
           justify-content:space-between;
-          background:#1a1a1a;
-          padding:10px;
-          border-radius:10px;
-          margin-bottom:10px;
-          border:1px solid #333;
+          padding:8px 4px;
+          margin-bottom:6px;
+          color:white;
         `;
 
-        card.innerHTML = `
+        row.innerHTML = `
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${c.itemIcon}" style="width:50px;height:50px;border-radius:8px;object-fit:cover;">
+            <img src="${c.itemIcon}" style="width:45px;height:45px;border-radius:6px;object-fit:cover;">
             <div>
-              <div style="font-weight:bold;">${c.itemName}</div>
+              <div>${c.itemName}</div>
               <div style="font-size:12px;color:#aaa;">${c.cosmeticType}</div>
             </div>
           </div>
 
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="color:#00ff99;font-weight:bold;cursor:pointer;"
-                 onclick="alert('ID: ${c.itemId}\nCost: ${c.cost}')">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div onclick="alert('ItemID: ${c.itemId}\nCost: ${c.cost}')"
+                 style="cursor:pointer;color:#00ff99;font-weight:bold;">
               ${c.itemId}
             </div>
 
-            ${isAdmin ? `<button onclick="deleteCosmetic(${index})" style="background:red;border:none;color:white;padding:6px 10px;border-radius:6px;cursor:pointer;">X</button>` : ''}
+            ${isAdmin ? `<button onclick="deleteCosmetic(${index})" style="background:red;border:none;color:white;padding:5px 8px;border-radius:5px;cursor:pointer;">X</button>` : ''}
           </div>
         `;
 
-        grid.appendChild(card);
+        grid.appendChild(row);
       });
     }
 
