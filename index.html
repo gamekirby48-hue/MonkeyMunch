@@ -294,16 +294,13 @@
 
   <script>
 
-    // ADD ADMINS HERE
-    // Example:
-    // 'CoolDuck',
-    // 'Memez',
-    // 'NewAdmin'
-
     const adminUsers = [
       'CoolDuck',
       'Memez'
     ];
+
+    // DEFAULT IMAGE USED FOR ICON + BACKGROUND IF EMPTY
+    const DEFAULT_IMAGE = "https://raw.githubusercontent.com/gamekirby48-hue/MonkeyMunch/main/bar_background.png";
 
     function getUsers() {
       return JSON.parse(localStorage.getItem('users')) || [];
@@ -441,9 +438,12 @@
       const cosmetics = getCosmetics();
 
       cosmetics.forEach((cosmetic, index) => {
+        const bg = cosmetic.backgroundImage || DEFAULT_IMAGE;
+        const icon = cosmetic.itemIcon || DEFAULT_IMAGE;
+
         const card = document.createElement('div');
         card.className = 'cosmetic-card';
-        card.style.backgroundImage = `url(${cosmetic.backgroundImage})`;
+        card.style.backgroundImage = `url(${bg})`;
 
         const currentUser = localStorage.getItem('currentUser');
         const isAdmin = adminUsers.includes(currentUser);
@@ -451,7 +451,7 @@
         card.innerHTML = `
           <div class="overlay">
             <div class="top">
-              <img src="${cosmetic.itemIcon}">
+              <img src="${icon}">
               <h3>${cosmetic.itemName}</h3>
               <div class="type">${cosmetic.cosmeticType}</div>
             </div>
