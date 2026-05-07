@@ -299,7 +299,6 @@
       'Memez'
     ];
 
-    // DEFAULT IMAGE USED FOR ICON + BACKGROUND IF EMPTY
     const DEFAULT_IMAGE = "https://raw.githubusercontent.com/gamekirby48-hue/MonkeyMunch/main/bar_background.png";
 
     function getUsers() {
@@ -418,9 +417,7 @@
       });
 
       saveCosmetics(cosmetics);
-
       alert('Cosmetic Added');
-
       loadCosmetics();
     }
 
@@ -431,11 +428,40 @@
       loadCosmetics();
     }
 
+    // OPEN DETAIL MODAL
+    function openCosmetic(cosmetic) {
+      let modal = document.getElementById('cosmeticModal');
+
+      if (!modal) {
+        document.body.insertAdjacentHTML('beforeend', `
+          <div id="cosmeticModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:9999;">
+            <div style="background:#1a1a1a;padding:20px;border-radius:15px;max-width:400px;width:90%;text-align:center;position:relative;">
+              <span onclick="document.getElementById('cosmeticModal').remove()" style="position:absolute;top:10px;right:15px;cursor:pointer;font-size:20px;">X</span>
+              <img id="modalIcon" style="width:150px;height:150px;border-radius:12px;margin-bottom:10px;">
+              <h2 id="modalName"></h2>
+              <p id="modalType"></p>
+              <p id="modalCost"></p>
+              <p id="modalId"></p>
+            </div>
+          </div>
+        `);
+        modal = document.getElementById('cosmeticModal');
+      }
+
+      document.getElementById('modalIcon').src = cosmetic.itemIcon || DEFAULT_IMAGE;
+      document.getElementById('modalName').innerText = cosmetic.itemName;
+      document.getElementById('modalType').innerText = "Type: " + cosmetic.cosmeticType;
+      document.getElementById('modalCost').innerText = "Cost: " + cosmetic.cost;
+      document.getElementById('modalId').innerText = "ID: " + cosmetic.itemId;
+    }
+
     function loadCosmetics() {
       const grid = document.getElementById('cosmeticsGrid');
       grid.innerHTML = '';
 
       const cosmetics = getCosmetics();
+      const currentUser = localStorage.getItem('currentUser');
+      const isAdmin = adminUsers.includes(currentUser);
 
       cosmetics.forEach((cosmetic, index) => {
         const bg = cosmetic.backgroundImage || DEFAULT_IMAGE;
@@ -445,12 +471,9 @@
         card.className = 'cosmetic-card';
         card.style.backgroundImage = `url(${bg})`;
 
-        const currentUser = localStorage.getItem('currentUser');
-        const isAdmin = adminUsers.includes(currentUser);
-
         card.innerHTML = `
           <div class="overlay">
-            <div class="top">
+            <div class="top" onclick='openCosmetic(${JSON.stringify(cosmetic)})' style="cursor:pointer;">
               <img src="${icon}">
               <h3>${cosmetic.itemName}</h3>
               <div class="type">${cosmetic.cosmeticType}</div>
