@@ -319,8 +319,7 @@
       }
 
       const users = getUsers();
-
-      const exists = users.find(user => user.username.toLowerCase() === username.toLowerCase());
+      const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
 
       if (exists) {
         alert('Username already taken');
@@ -329,7 +328,6 @@
 
       users.push({ username, password });
       saveUsers(users);
-
       alert('Account Created');
     }
 
@@ -338,8 +336,7 @@
       const password = document.getElementById('loginPassword').value.trim();
 
       const users = getUsers();
-
-      const validUser = users.find(user => user.username === username && user.password === password);
+      const validUser = users.find(u => u.username === username && u.password === password);
 
       if (!validUser) {
         alert('Invalid Login');
@@ -357,7 +354,6 @@
 
     function startWebsite() {
       const currentUser = localStorage.getItem('currentUser');
-
       if (!currentUser) return;
 
       document.getElementById('homePage').classList.add('hidden');
@@ -406,16 +402,7 @@
       }
 
       const cosmetics = getCosmetics();
-
-      cosmetics.push({
-        itemName,
-        itemId,
-        cosmeticType,
-        cost,
-        itemIcon,
-        backgroundImage
-      });
-
+      cosmetics.push({ itemName, itemId, cosmeticType, cost, itemIcon, backgroundImage });
       saveCosmetics(cosmetics);
       alert('Cosmetic Added');
       loadCosmetics();
@@ -428,8 +415,11 @@
       loadCosmetics();
     }
 
-    // OPEN DETAIL MODAL
-    function openCosmetic(cosmetic) {
+    function openCosmetic(index) {
+      const cosmetics = getCosmetics();
+      const c = cosmetics[index];
+      if (!c) return;
+
       let modal = document.getElementById('cosmeticModal');
 
       if (!modal) {
@@ -445,14 +435,13 @@
             </div>
           </div>
         `);
-        modal = document.getElementById('cosmeticModal');
       }
 
-      document.getElementById('modalIcon').src = cosmetic.itemIcon || DEFAULT_IMAGE;
-      document.getElementById('modalName').innerText = cosmetic.itemName;
-      document.getElementById('modalType').innerText = "Type: " + cosmetic.cosmeticType;
-      document.getElementById('modalCost').innerText = "Cost: " + cosmetic.cost;
-      document.getElementById('modalId').innerText = "ID: " + cosmetic.itemId;
+      document.getElementById('modalIcon').src = c.itemIcon || DEFAULT_IMAGE;
+      document.getElementById('modalName').innerText = c.itemName;
+      document.getElementById('modalType').innerText = 'Type: ' + c.cosmeticType;
+      document.getElementById('modalCost').innerText = 'Cost: ' + c.cost;
+      document.getElementById('modalId').innerText = 'ID: ' + c.itemId;
     }
 
     function loadCosmetics() {
@@ -463,9 +452,9 @@
       const currentUser = localStorage.getItem('currentUser');
       const isAdmin = adminUsers.includes(currentUser);
 
-      cosmetics.forEach((cosmetic, index) => {
-        const bg = cosmetic.backgroundImage || DEFAULT_IMAGE;
-        const icon = cosmetic.itemIcon || DEFAULT_IMAGE;
+      cosmetics.forEach((c, index) => {
+        const bg = c.backgroundImage || DEFAULT_IMAGE;
+        const icon = c.itemIcon || DEFAULT_IMAGE;
 
         const card = document.createElement('div');
         card.className = 'cosmetic-card';
@@ -473,15 +462,15 @@
 
         card.innerHTML = `
           <div class="overlay">
-            <div class="top" onclick='openCosmetic(${JSON.stringify(cosmetic)})' style="cursor:pointer;">
+            <div class="top">
               <img src="${icon}">
-              <h3>${cosmetic.itemName}</h3>
-              <div class="type">${cosmetic.cosmeticType}</div>
+              <h3>${c.itemName}</h3>
+              <div class="type">${c.cosmeticType}</div>
             </div>
 
             <div class="bottom">
-              <div class="cost">${cosmetic.cost} Coins</div>
-              <div class="itemid">ID: ${cosmetic.itemId}</div>
+              <div class="cost">${c.cost} Coins</div>
+              <div class="itemid" style="cursor:pointer;color:#00ff99;font-weight:bold;" onclick="openCosmetic(${index})">Click ItemID</div>
               ${isAdmin ? `<button class="delete-btn" onclick="deleteCosmetic(${index})">Delete</button>` : ''}
             </div>
           </div>
