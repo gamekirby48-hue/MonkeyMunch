@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MonkeyMunch</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #111;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      width: 100%;
+      background: #1c1c1c;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #333;
+    }
+
+    .navbar h1 {
+      color: #00ff99;
+      font-size: 30px;
+    }
+
+    .navbar button {
+      background: #00ff99;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 25px;
+    }
+
+    .panel {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #333;
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      margin-bottom: 15px;
+      color: #00ff99;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #2a2a2a;
+      color: white;
+    }
+
+    .main-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #00ff99;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .home-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      height: calc(100vh - 80px);
+    }
+
+    .home-page h1 {
+      font-size: 60px;
+      color: #00ff99;
+      margin-bottom: 15px;
+    }
+
+    .home-page p {
+      color: #ccc;
+      margin-bottom: 30px;
+      font-size: 18px;
+    }
+
+    .auth-box {
+      width: 350px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .cosmetics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .cosmetic-card {
+      border-radius: 16px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      min-height: 320px;
+      border: 2px solid #333;
+    }
+
+    .overlay {
+      background: rgba(0,0,0,0.6);
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .top {
+      text-align: center;
+    }
+
+    .top img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid white;
+      margin-bottom: 10px;
+    }
+
+    .bottom {
+      text-align: center;
+    }
+
+    .type {
+      color: #00ff99;
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    .cost {
+      margin-top: 10px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .itemid {
+      margin-top: 5px;
+      color: #ccc;
+      font-size: 12px;
+    }
+
+    .delete-btn {
+      margin-top: 10px;
+      background: red;
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .welcome-user {
+      color: #ccc;
+      margin-left: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar hidden" id="navbar">
+    <h1>MonkeyMunch</h1>
+
+    <div>
+      <span class="welcome-user" id="welcomeUser"></span>
+      <button onclick="showShop()">Shop</button>
+      <button id="adminButton" class="hidden" onclick="showAdmin()">Admin Panel</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="home-page" id="homePage">
+      <h1>Welcome to MonkeyMunch</h1>
+      <p>Create an account or login to continue</p>
+
+      <div class="panel auth-box">
+        <h2>Sign Up</h2>
+
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" id="signupUsername" placeholder="CoolDuck">
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="signupPassword" placeholder="Password">
+        </div>
+
+        <button class="main-btn" onclick="signup()">Sign Up</button>
+
+        <br><br>
+
+        <h2>Login</h2>
+
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" id="loginUsername" placeholder="CoolDuck">
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="Password">
+        </div>
+
+        <button class="main-btn" onclick="login()">Login</button>
+      </div>
+    </div>
+
+    <div id="adminPanel" class="panel hidden">
+      <h2>Add Cosmetics</h2>
+
+      <div class="input-group">
+        <label>Item Name</label>
+        <input type="text" id="itemName">
+      </div>
+
+      <div class="input-group">
+        <label>Item ID</label>
+        <input type="text" id="itemId">
+      </div>
+
+      <div class="input-group">
+        <label>Cosmetic Type</label>
+        <input type="text" id="cosmeticType">
+      </div>
+
+      <div class="input-group">
+        <label>Cost</label>
+        <input type="number" id="cost">
+      </div>
+
+      <div class="input-group">
+        <label>Item Icon URL</label>
+        <input type="text" id="itemIcon">
+      </div>
+
+      <div class="input-group">
+        <label>Background Image URL</label>
+        <input type="text" id="backgroundImage">
+      </div>
+
+      <button class="main-btn" onclick="addCosmetic()">Add Cosmetic</button>
+    </div>
+
+    <div id="shopPage" class="hidden">
+      <div class="panel">
+        <h2>Cosmetic Shop</h2>
+        <div class="cosmetics-grid" id="cosmeticsGrid"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+
+    // ADD ADMINS HERE
+    // Example:
+    // 'CoolDuck',
+    // 'Memez',
+    // 'NewAdmin'
+
+    const adminUsers = [
+      'CoolDuck',
+      'Memez'
+    ];
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('users')) || [];
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    function signup() {
+      const username = document.getElementById('signupUsername').value.trim();
+      const password = document.getElementById('signupPassword').value.trim();
+
+      if (!username || !password) {
+        alert('Fill out all fields');
+        return;
+      }
+
+      const users = getUsers();
+
+      const exists = users.find(user => user.username.toLowerCase() === username.toLowerCase());
+
+      if (exists) {
+        alert('Username already taken');
+        return;
+      }
+
+      users.push({ username, password });
+      saveUsers(users);
+
+      alert('Account Created');
+    }
+
+    function login() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      const users = getUsers();
+
+      const validUser = users.find(user => user.username === username && user.password === password);
+
+      if (!validUser) {
+        alert('Invalid Login');
+        return;
+      }
+
+      localStorage.setItem('currentUser', username);
+      startWebsite();
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      location.reload();
+    }
+
+    function startWebsite() {
+      const currentUser = localStorage.getItem('currentUser');
+
+      if (!currentUser) return;
+
+      document.getElementById('homePage').classList.add('hidden');
+      document.getElementById('navbar').classList.remove('hidden');
+      document.getElementById('shopPage').classList.remove('hidden');
+
+      document.getElementById('welcomeUser').innerText = 'Logged in as ' + currentUser;
+
+      if (adminUsers.includes(currentUser)) {
+        document.getElementById('adminButton').classList.remove('hidden');
+      }
+
+      loadCosmetics();
+    }
+
+    function showAdmin() {
+      document.getElementById('adminPanel').classList.remove('hidden');
+      document.getElementById('shopPage').classList.add('hidden');
+    }
+
+    function showShop() {
+      document.getElementById('adminPanel').classList.add('hidden');
+      document.getElementById('shopPage').classList.remove('hidden');
+      loadCosmetics();
+    }
+
+    function getCosmetics() {
+      return JSON.parse(localStorage.getItem('monkeymunch_cosmetics')) || [];
+    }
+
+    function saveCosmetics(cosmetics) {
+      localStorage.setItem('monkeymunch_cosmetics', JSON.stringify(cosmetics));
+    }
+
+    function addCosmetic() {
+      const itemName = document.getElementById('itemName').value;
+      const itemId = document.getElementById('itemId').value;
+      const cosmeticType = document.getElementById('cosmeticType').value;
+      const cost = document.getElementById('cost').value;
+      const itemIcon = document.getElementById('itemIcon').value;
+      const backgroundImage = document.getElementById('backgroundImage').value;
+
+      if (!itemName || !itemId || !cosmeticType || !cost || !itemIcon || !backgroundImage) {
+        alert('Fill out all fields');
+        return;
+      }
+
+      const cosmetics = getCosmetics();
+
+      cosmetics.push({
+        itemName,
+        itemId,
+        cosmeticType,
+        cost,
+        itemIcon,
+        backgroundImage
+      });
+
+      saveCosmetics(cosmetics);
+
+      alert('Cosmetic Added');
+
+      loadCosmetics();
+    }
+
+    function deleteCosmetic(index) {
+      const cosmetics = getCosmetics();
+      cosmetics.splice(index, 1);
+      saveCosmetics(cosmetics);
+      loadCosmetics();
+    }
+
+    function loadCosmetics() {
+      const grid = document.getElementById('cosmeticsGrid');
+      grid.innerHTML = '';
+
+      const cosmetics = getCosmetics();
+
+      cosmetics.forEach((cosmetic, index) => {
+        const card = document.createElement('div');
+        card.className = 'cosmetic-card';
+        card.style.backgroundImage = `url(${cosmetic.backgroundImage})`;
+
+        const currentUser = localStorage.getItem('currentUser');
+        const isAdmin = adminUsers.includes(currentUser);
+
+        card.innerHTML = `
+          <div class="overlay">
+            <div class="top">
+              <img src="${cosmetic.itemIcon}">
+              <h3>${cosmetic.itemName}</h3>
+              <div class="type">${cosmetic.cosmeticType}</div>
+            </div>
+
+            <div class="bottom">
+              <div class="cost">${cosmetic.cost} Coins</div>
+              <div class="itemid">ID: ${cosmetic.itemId}</div>
+              ${isAdmin ? `<button class="delete-btn" onclick="deleteCosmetic(${index})">Delete</button>` : ''}
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    startWebsite();
+
+  </script>
+
+</body>
+</html>
