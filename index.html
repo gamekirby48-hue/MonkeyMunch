@@ -384,6 +384,24 @@
       localStorage.setItem('monkeymunch_cosmetics', JSON.stringify(cosmetics));
     }
 
+    function resetForm() {
+      document.getElementById('itemName').value = '';
+      document.getElementById('itemId').value = '';
+      document.getElementById('cosmeticType').value = '';
+      document.getElementById('cost').value = '';
+      document.getElementById('itemIcon').value = '';
+      if (document.getElementById('description')) {
+        document.getElementById('description').value = '';
+      }
+
+      const btn = document.getElementById('addCosmeticBtn');
+      if (btn) btn.innerText = 'Add Cosmetic';
+
+      editingIndex = -1;
+    }
+
+    function signup(){}
+
     function addCosmetic() {
       const itemName = document.getElementById('itemName').value;
       const itemId = document.getElementById('itemId').value;
@@ -399,8 +417,14 @@
       const cosmetics = getCosmetics();
 
       if (editingIndex >= 0) {
-        cosmetics[editingIndex] = { itemName, itemId, cosmeticType, cost, itemIcon, description };
-        editingIndex = -1;
+        cosmetics[editingIndex] = {
+          itemName,
+          itemId,
+          cosmeticType,
+          cost,
+          itemIcon,
+          description
+        };
         alert('Cosmetic Updated');
       } else {
         cosmetics.push({ itemName, itemId, cosmeticType, cost, itemIcon, description });
@@ -408,6 +432,7 @@
       }
 
       saveCosmetics(cosmetics);
+      resetForm();
       loadCosmetics();
     }
 
@@ -418,7 +443,6 @@
       loadCosmetics();
     }
 
-    // EDIT OPENS ADMIN PANEL AND FILLS FORM
     function editCosmetic(index) {
       const cosmetics = getCosmetics();
       const c = cosmetics[index];
@@ -438,6 +462,9 @@
       if (document.getElementById('description')) {
         document.getElementById('description').value = c.description || "";
       }
+
+      const btn = document.getElementById('addCosmeticBtn');
+      if (btn) btn.innerText = 'Save Changes';
     }
 
     function loadCosmetics() {
@@ -466,7 +493,9 @@
           </div>
 
           <div style="display:flex;align-items:center;gap:8px;">
-            <div onclick="alert('ItemID: ${c.itemId}\nCost: ${c.cost}\nDescription: ${c.description || 'None'}')"
+            <div onclick="alert('ItemID: ${c.itemId}
+Cost: ${c.cost}
+Description: ${c.description || 'None'}')"
                  style="cursor:pointer;color:#00ff99;font-weight:bold;font-size:12px;">
               ${c.itemId}
             </div>
