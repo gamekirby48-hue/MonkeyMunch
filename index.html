@@ -313,17 +313,11 @@
       const username = document.getElementById('signupUsername').value.trim();
       const password = document.getElementById('signupPassword').value.trim();
 
-      if (!username || !password) {
-        alert('Fill out all fields');
-        return;
-      }
+      if (!username || !password) return alert('Fill out all fields');
 
       const users = getUsers();
-      const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
-
-      if (exists) {
-        alert('Username already taken');
-        return;
+      if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+        return alert('Username already taken');
       }
 
       users.push({ username, password });
@@ -336,12 +330,9 @@
       const password = document.getElementById('loginPassword').value.trim();
 
       const users = getUsers();
-      const validUser = users.find(u => u.username === username && u.password === password);
+      const valid = users.find(u => u.username === username && u.password === password);
 
-      if (!validUser) {
-        alert('Invalid Login');
-        return;
-      }
+      if (!valid) return alert('Invalid Login');
 
       localStorage.setItem('currentUser', username);
       startWebsite();
@@ -397,15 +388,14 @@
       const backgroundImage = document.getElementById('backgroundImage').value;
 
       if (!itemName || !itemId || !cosmeticType || !cost || !itemIcon || !backgroundImage) {
-        alert('Fill out all fields');
-        return;
+        return alert('Fill out all fields');
       }
 
       const cosmetics = getCosmetics();
       cosmetics.push({ itemName, itemId, cosmeticType, cost, itemIcon, backgroundImage });
       saveCosmetics(cosmetics);
-      alert('Cosmetic Added');
       loadCosmetics();
+      alert('Cosmetic Added');
     }
 
     function deleteCosmetic(index) {
@@ -415,33 +405,53 @@
       loadCosmetics();
     }
 
+    // BIG MODERN UI MODAL
     function openCosmetic(index) {
       const cosmetics = getCosmetics();
       const c = cosmetics[index];
       if (!c) return;
 
-      let modal = document.getElementById('cosmeticModal');
+      const old = document.getElementById('cosmicModalBig');
+      if (old) old.remove();
 
-      if (!modal) {
-        document.body.insertAdjacentHTML('beforeend', `
-          <div id="cosmeticModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:9999;">
-            <div style="background:#1a1a1a;padding:20px;border-radius:15px;max-width:400px;width:90%;text-align:center;position:relative;">
-              <span onclick="document.getElementById('cosmeticModal').remove()" style="position:absolute;top:10px;right:15px;cursor:pointer;font-size:20px;">X</span>
-              <img id="modalIcon" style="width:150px;height:150px;border-radius:12px;margin-bottom:10px;">
-              <h2 id="modalName"></h2>
-              <p id="modalType"></p>
-              <p id="modalCost"></p>
-              <p id="modalId"></p>
-            </div>
+      const modal = document.createElement('div');
+      modal.id = 'cosmicModalBig';
+      modal.style = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.85);
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        z-index:9999;
+      `;
+
+      modal.innerHTML = `
+        <div style="width:700px;max-width:95%;height:420px;background:#1a1a1a;border-radius:20px;display:flex;overflow:hidden;box-shadow:0 0 30px rgba(0,255,153,0.3);">
+
+          <div style="flex:1;background:url('${c.backgroundImage || DEFAULT_IMAGE}') center/cover;">
           </div>
-        `);
-      }
 
-      document.getElementById('modalIcon').src = c.itemIcon || DEFAULT_IMAGE;
-      document.getElementById('modalName').innerText = c.itemName;
-      document.getElementById('modalType').innerText = 'Type: ' + c.cosmeticType;
-      document.getElementById('modalCost').innerText = 'Cost: ' + c.cost;
-      document.getElementById('modalId').innerText = 'ID: ' + c.itemId;
+          <div style="flex:1;padding:20px;display:flex;flex-direction:column;justify-content:center;gap:10px;position:relative;">
+
+            <button onclick="document.getElementById('cosmicModalBig').remove()"
+              style="position:absolute;top:10px;right:15px;background:red;color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;">
+              X
+            </button>
+
+            <img src="${c.itemIcon || DEFAULT_IMAGE}" 
+              style="width:140px;height:140px;border-radius:15px;border:2px solid #00ff99;object-fit:cover;">
+
+            <h1 style="color:#00ff99;margin:0;">${c.itemName}</h1>
+            <p style="color:#ccc;margin:0;">Type: ${c.cosmeticType}</p>
+            <p style="color:#ccc;margin:0;">Cost: ${c.cost}</p>
+            <p style="color:#ccc;margin:0;">ItemID: ${c.itemId}</p>
+
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
     }
 
     function loadCosmetics() {
@@ -453,24 +463,24 @@
       const isAdmin = adminUsers.includes(currentUser);
 
       cosmetics.forEach((c, index) => {
-        const bg = c.backgroundImage || DEFAULT_IMAGE;
-        const icon = c.itemIcon || DEFAULT_IMAGE;
-
         const card = document.createElement('div');
         card.className = 'cosmetic-card';
-        card.style.backgroundImage = `url(${bg})`;
+        card.style.backgroundImage = `url(${c.backgroundImage || DEFAULT_IMAGE})`;
 
         card.innerHTML = `
           <div class="overlay">
             <div class="top">
-              <img src="${icon}">
+              <img src="${c.itemIcon || DEFAULT_IMAGE}">
               <h3>${c.itemName}</h3>
               <div class="type">${c.cosmeticType}</div>
             </div>
 
             <div class="bottom">
               <div class="cost">${c.cost} Coins</div>
-              <div class="itemid" style="cursor:pointer;color:#00ff99;font-weight:bold;" onclick="openCosmetic(${index})">Click ItemID</div>
+              <div class="itemid" style="cursor:pointer;color:#00ff99;font-weight:bold;"
+                   onclick="openCosmetic(${index})">
+                Click ItemID
+              </div>
               ${isAdmin ? `<button class="delete-btn" onclick="deleteCosmetic(${index})">Delete</button>` : ''}
             </div>
           </div>
