@@ -383,13 +383,22 @@
       const cosmeticType = document.getElementById('cosmeticType').value;
       const cost = document.getElementById('cost').value;
       const itemIcon = document.getElementById('itemIcon').value;
+      const description = document.getElementById('description').value;
 
       if (!itemName || !itemId || !cosmeticType || !cost || !itemIcon) {
-        return alert('Fill out all fields');
+        return alert('Fill out all required fields');
       }
 
       const cosmetics = getCosmetics();
-      cosmetics.push({ itemName, itemId, cosmeticType, cost, itemIcon });
+      cosmetics.push({
+        itemName,
+        itemId,
+        cosmeticType,
+        cost,
+        itemIcon,
+        description
+      });
+
       saveCosmetics(cosmetics);
       loadCosmetics();
       alert('Cosmetic Added');
@@ -402,7 +411,6 @@
       loadCosmetics();
     }
 
-    // 2-COLUMN CLEAN GRID (NOT FULL WIDTH LIST)
     function loadCosmetics() {
       const grid = document.getElementById('cosmeticsGrid');
       grid.innerHTML = '';
@@ -411,7 +419,6 @@
       const currentUser = localStorage.getItem('currentUser');
       const isAdmin = adminUsers.includes(currentUser);
 
-      // make container behave like 2 column grid
       grid.style.display = 'grid';
       grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
       grid.style.gap = '10px';
@@ -437,7 +444,7 @@
           </div>
 
           <div style="display:flex;align-items:center;gap:8px;">
-            <div onclick="alert('ItemID: ${c.itemId}\nCost: ${c.cost}')"
+            <div onclick="alert('ItemID: ${c.itemId}\nCost: ${c.cost}\nDescription: ${c.description || 'None'}')"
                  style="cursor:pointer;color:#00ff99;font-weight:bold;font-size:12px;">
               ${c.itemId}
             </div>
