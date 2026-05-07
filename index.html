@@ -296,8 +296,15 @@
 
     const adminUsers = [
       'CoolDuck',
-      'Memez'
+      'Memez',
+      'NewAdmin'
     ];
+
+    function isAdminUser(username) {
+      return adminUsers.some(u => u.toLowerCase() === (username || '').toLowerCase().trim());
+    }
+
+    let editingIndex = -1;
 
     function getUsers() {
       return JSON.parse(localStorage.getItem('users')) || [];
@@ -351,7 +358,7 @@
 
       document.getElementById('welcomeUser').innerText = 'Logged in as ' + currentUser;
 
-      if (adminUsers.includes(currentUser)) {
+      if (isAdminUser(currentUser)) {
         document.getElementById('adminButton').classList.remove('hidden');
       }
 
@@ -386,14 +393,22 @@
       const description = document.getElementById('description') ? document.getElementById('description').value : "";
 
       if (!itemName || !itemId || !cosmeticType || !cost || !itemIcon) {
-        return alert('Fill out all fields');
+        return alert('Fill out all required fields');
       }
 
       const cosmetics = getCosmetics();
-      cosmetics.push({ itemName, itemId, cosmeticType, cost, itemIcon, description });
+
+      if (editingIndex >= 0) {
+        cosmetics[editingIndex] = { itemName, itemId, cosmeticType, cost, itemIcon, description };
+        editingIndex = -1;
+        alert('Cosmetic Updated');
+      } else {
+        cosmetics.push({ itemName, itemId, cosmeticType, cost, itemIcon, description });
+        alert('Cosmetic Added');
+      }
+
       saveCosmetics(cosmetics);
       loadCosmetics();
-      alert('Cosmetic Added');
     }
 
     function deleteCosmetic(index) {
@@ -403,30 +418,26 @@
       loadCosmetics();
     }
 
-    // EDIT FUNCTION
+    // EDIT OPENS ADMIN PANEL AND FILLS FORM
     function editCosmetic(index) {
       const cosmetics = getCosmetics();
       const c = cosmetics[index];
       if (!c) return;
 
-      const name = prompt("Item Name", c.itemName);
-      const id = prompt("Item ID", c.itemId);
-      const type = prompt("Cosmetic Type", c.cosmeticType);
-      const cost = prompt("Cost", c.cost);
-      const icon = prompt("Icon URL", c.itemIcon);
-      const desc = prompt("Description", c.description || "");
+      editingIndex = index;
 
-      cosmetics[index] = {
-        itemName: name,
-        itemId: id,
-        cosmeticType: type,
-        cost: cost,
-        itemIcon: icon,
-        description: desc
-      };
+      document.getElementById('adminPanel').classList.remove('hidden');
+      document.getElementById('shopPage').classList.add('hidden');
 
-      saveCosmetics(cosmetics);
-      loadCosmetics();
+      document.getElementById('itemName').value = c.itemName;
+      document.getElementById('itemId').value = c.itemId;
+      document.getElementById('cosmeticType').value = c.cosmeticType;
+      document.getElementById('cost').value = c.cost;
+      document.getElementById('itemIcon').value = c.itemIcon;
+
+      if (document.getElementById('description')) {
+        document.getElementById('description').value = c.description || "";
+      }
     }
 
     function loadCosmetics() {
@@ -435,7 +446,7 @@
 
       const cosmetics = getCosmetics();
       const currentUser = localStorage.getItem('currentUser');
-      const isAdmin = adminUsers.includes(currentUser);
+      const isAdmin = isAdminUser(currentUser);
 
       grid.style.display = 'grid';
       grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
@@ -443,14 +454,7 @@
 
       cosmetics.forEach((c, index) => {
         const item = document.createElement('div');
-        item.style = `
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          padding:8px;
-          color:white;
-          border-radius:8px;
-        `;
+        item.style = `display:flex;justify-content:space-between;align-items:center;padding:8px;color:white;border-radius:8px;`;
 
         item.innerHTML = `
           <div style="display:flex;align-items:center;gap:10px;">
@@ -468,7 +472,7 @@
             </div>
 
             ${isAdmin ? `
-              <button onclick="editCosmetic(${index})" style="background:#ffaa00;border:none;color:black;padding:4px 7px;border-radius:5px;cursor:pointer;font-weight:bold;">!</button>
+              <button onclick="editCosmetic(${index})" style="background:#ffaa00;border:none;color:black;padding:4px 7px;border-radius:5px;font-weight:bold;cursor:pointer;">!</button>
               <button onclick="deleteCosmetic(${index})" style="background:red;border:none;color:white;padding:4px 6px;border-radius:5px;cursor:pointer;">X</button>
             ` : ''}
           </div>
